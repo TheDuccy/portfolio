@@ -1,0 +1,545 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Jack Card</title>
+  <link href="https://fonts.cdnfonts.com/css/code" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f6f3;
+      --surface: #ffffff;
+      --border: #e4e2dc;
+      --text: #1a1917;
+      --muted: #8a8880;
+      --accent: #2563eb;
+      --tag-bg: #eef2ff;
+      --tag-text: #3b4fd8;
+      --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --card-hover-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Code Light', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,246,243,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-label {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Code Bold', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .hero-sub {
+      font-family: 'Code Light', sans-serif;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.8;
+    }
+
+    .filter-bar {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .filter-btn {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      text-transform: uppercase;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .projects-grid {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+      animation: fadeUp 0.5s ease both;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--card-hover-shadow); }
+
+    .card-img-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .card-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .card:hover .card-img { transform: scale(1.03); }
+    .card-img-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e8e6e0 0%, #d4d1c9 100%);
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .card-img-count {
+      position: absolute;
+      bottom: 8px; right: 8px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      backdrop-filter: blur(4px);
+    }
+    .card-img-overlay {
+      position: absolute; inset: 0;
+      background: rgba(37,99,235,0.0);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s;
+    }
+    .card:hover .card-img-overlay { background: rgba(37,99,235,0.08); }
+    .card-img-overlay-label {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(37,99,235,0.85);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .card:hover .card-img-overlay-label { opacity: 1; transform: translateY(0); }
+
+    .card-body { padding: 1.25rem 1.4rem 1.4rem; flex: 1; display: flex; flex-direction: column; gap: 0.55rem; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .tag {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.62rem;
+      padding: 0.18rem 0.55rem;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .card-title {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .card-desc {
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      animation: lbFadeIn 0.2s ease;
+    }
+    .lightbox.open { display: flex; }
+    .lb-inner {
+      position: relative;
+      max-width: min(90vw, 1000px);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .lb-header {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .lb-title-wrap { display: flex; flex-direction: column; gap: 0.2rem; }
+    .lb-project-name {
+      font-family: 'Code Bold', sans-serif;
+      font-size: 1rem;
+      color: #fff;
+      letter-spacing: 0.04em;
+    }
+    .lb-counter {
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.06em;
+    }
+    .lb-close {
+      background: none; border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.7);
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .lb-img-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .lb-img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+      animation: lbSlide 0.22s ease;
+    }
+    .lb-arrow {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+      z-index: 2;
+    }
+    .lb-arrow:hover { background: rgba(255,255,255,0.2); }
+    .lb-arrow.prev { left: 10px; }
+    .lb-arrow.next { right: 10px; }
+    .lb-arrow:disabled { opacity: 0.2; cursor: default; }
+    .lb-thumbs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 100%;
+    }
+    .lb-thumb {
+      width: 68px; height: 42px;
+      object-fit: cover;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 0.15s, border-color 0.15s;
+      background: #222;
+    }
+    .lb-thumb.active, .lb-thumb:hover { opacity: 1; border-color: var(--accent); }
+    .lb-thumb-placeholder {
+      width: 68px; height: 42px;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      background: #333;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.5rem;
+      color: rgba(255,255,255,0.3);
+      opacity: 0.55;
+      transition: opacity 0.15s, border-color 0.15s;
+    }
+    .lb-thumb-placeholder.active, .lb-thumb-placeholder:hover { opacity: 1; border-color: var(--accent); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-family: 'Code Light', sans-serif;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes lbSlide {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 600px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.9rem; }
+      .lb-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="#">Jack Card</a>
+    <ul class="nav-links">
+      <li><a href="#projects">Work</a></li>
+      <li><a href="https://github.com/theduccy" target="_blank">GitHub</a></li>
+      <li><a href="mailto:theduccygaming@gmail.com">Contact</a></li>
+    </ul>
+  </nav>
+
+  <header>
+    <p class="hero-label">My Portfolio</p>
+    <h1>I build things<br/>on the internet.</h1>
+    <p class="hero-sub">Developer and 3D artist based in Florida. I work on games in Unity and make cool stuff in Blender.</p>
+  </header>
+
+  <main class="projects-grid" id="projects">
+
+    <!--
+      HOW TO ADD A PROJECT:
+      1. Copy one <article> block below
+      2. Set data-title, data-tags, data-gallery (comma-separated image paths, first = card preview)
+      3. Update the card-img-count badge text
+      4. Fill in card-title and card-desc
+      5. Add your images to images/<project-folder>/
+    -->
+
+    <!-- CARD 1 -->
+    <article class="card"
+      data-tags="web open-source"
+      data-title="Project One"
+      data-gallery="images/project-one/preview.png,images/project-one/screen-1.png,images/project-one/screen-2.png"
+      style="animation-delay:0.05s">
+      <div class="card-img-wrap">
+        <div class="card-img-placeholder">preview.png</div>
+        <div class="card-img-overlay"><span class="card-img-overlay-label">View Gallery</span></div>
+        <span class="card-img-count">3 screenshots</span>
+      </div>
+      <div class="card-body">
+        <div class="card-tags">
+          <span class="tag">web</span>
+          <span class="tag">open-source</span>
+        </div>
+        <h2 class="card-title">Project One</h2>
+        <p class="card-desc">A short description of what this project does, the problem it solves, and anything interesting about how it was built.</p>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>Built with HTML &amp; hosted on GitHub Pages</footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <div class="lb-inner">
+      <div class="lb-header">
+        <div class="lb-title-wrap">
+          <span class="lb-project-name" id="lb-title"></span>
+          <span class="lb-counter" id="lb-counter"></span>
+        </div>
+        <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
+      </div>
+      <div class="lb-img-wrap">
+        <button class="lb-arrow prev" id="lb-prev">‹</button>
+        <img class="lb-img" id="lb-img" src="" alt="" />
+        <button class="lb-arrow next" id="lb-next">›</button>
+      </div>
+      <div class="lb-thumbs" id="lb-thumbs"></div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-load card preview from first gallery image
+    document.querySelectorAll('.card[data-gallery]').forEach(card => {
+      const imgs = card.dataset.gallery.split(',').map(s => s.trim()).filter(Boolean);
+      if (!imgs.length) return;
+      const wrap = card.querySelector('.card-img-wrap');
+      const placeholder = wrap.querySelector('.card-img-placeholder');
+      const img = document.createElement('img');
+      img.className = 'card-img';
+      img.src = imgs[0];
+      img.alt = card.dataset.title || '';
+      img.onerror = () => img.style.display = 'none';
+      wrap.insertBefore(img, placeholder);
+    });
+
+    // Filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.card').forEach(card => {
+          card.style.display = (filter === 'all' || (card.dataset.tags || '').includes(filter)) ? '' : 'none';
+        });
+      });
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lbTitle  = document.getElementById('lb-title');
+    const lbCounter= document.getElementById('lb-counter');
+    const lbImg    = document.getElementById('lb-img');
+    const lbThumbs = document.getElementById('lb-thumbs');
+    const lbClose  = document.getElementById('lb-close');
+    const lbPrev   = document.getElementById('lb-prev');
+    const lbNext   = document.getElementById('lb-next');
+    let gallery = [], current = 0;
+
+    function openLightbox(card) {
+      gallery = (card.dataset.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
+      if (!gallery.length) return;
+      lbTitle.textContent = card.dataset.title || '';
+      buildThumbs();
+      showSlide(0);
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showSlide(index) {
+      current = Math.max(0, Math.min(index, gallery.length - 1));
+      lbImg.src = gallery[current];
+      lbImg.alt = 'Screenshot ' + (current + 1);
+      lbCounter.textContent = (current + 1) + ' / ' + gallery.length;
+      lbPrev.disabled = current === 0;
+      lbNext.disabled = current === gallery.length - 1;
+      lbImg.style.animation = 'none';
+      lbImg.offsetHeight;
+      lbImg.style.animation = '';
+      document.querySelectorAll('.lb-thumb, .lb-thumb-placeholder').forEach((t, i) => {
+        t.classList.toggle('active', i === current);
+      });
+    }
+
+    function buildThumbs() {
+      lbThumbs.innerHTML = '';
+      gallery.forEach((src, i) => {
+        const thumb = document.createElement('img');
+        thumb.className = 'lb-thumb';
+        thumb.src = src;
+        thumb.alt = 'Thumb ' + (i + 1);
+        thumb.addEventListener('click', () => showSlide(i));
+        thumb.onerror = () => {
+          const ph = document.createElement('div');
+          ph.className = 'lb-thumb-placeholder';
+          ph.textContent = i + 1;
+          ph.addEventListener('click', () => showSlide(i));
+          thumb.replaceWith(ph);
+        };
+        lbThumbs.appendChild(thumb);
+      });
+    }
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => openLightbox(card));
+    });
+    lbClose.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', e => { e.stopPropagation(); showSlide(current - 1); });
+    lbNext.addEventListener('click', e => { e.stopPropagation(); showSlide(current + 1); });
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') showSlide(current - 1);
+      if (e.key === 'ArrowRight') showSlide(current + 1);
+    });
+  </script>
+
+</body>
+</html>
